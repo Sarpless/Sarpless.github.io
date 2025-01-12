@@ -1,0 +1,244 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>基于Docker的群辉NAS mc服务器搭建记录 | Sarp's Blog</title><meta name="author" content="Sarp"><meta name="copyright" content="Sarp"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="基于Docker的群辉NAS mc服务器搭建记录Time 2025.1.7：开始搭建 2025.1.12：搭建完成 软硬件环境 NAS：群晖DS224+ 系统：DSM 7.2.2-72806 Update 2 MCSM docker镜像版本：githubyumao&#x2F;mcsmanager-web:latest、githubyumao&#x2F;mcsmanager-daemon:lates">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Docker的群辉NAS mc服务器搭建记录">
+<meta property="og:url" content="https://sarpless.github.io/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/index.html">
+<meta property="og:site_name" content="Sarp&#39;s Blog">
+<meta property="og:description" content="基于Docker的群辉NAS mc服务器搭建记录Time 2025.1.7：开始搭建 2025.1.12：搭建完成 软硬件环境 NAS：群晖DS224+ 系统：DSM 7.2.2-72806 Update 2 MCSM docker镜像版本：githubyumao&#x2F;mcsmanager-web:latest、githubyumao&#x2F;mcsmanager-daemon:lates">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sarpless.github.io/2025/01/12/基于Docker的群辉NAS mc服务器搭建记录/MCSM.png">
+<meta property="article:published_time" content="2025-01-12T14:14:10.000Z">
+<meta property="article:modified_time" content="2025-01-12T14:21:02.547Z">
+<meta property="article:author" content="Sarp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sarpless.github.io/2025/01/12/基于Docker的群辉NAS mc服务器搭建记录/MCSM.png"><link rel="shortcut icon" href="/img/%E6%A9%99%E6%B1%81.png"><link rel="canonical" href="https://sarpless.github.io/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '基于Docker的群辉NAS mc服务器搭建记录',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-01-12 22:21:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.2.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('http://up.36992.com/pic/e6/c5/51/e6c551e768092c8655292d89a4034a74.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">Sarp's Blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">基于Docker的群辉NAS mc服务器搭建记录</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-12T14:14:10.000Z" title="发表于 2025-01-12 22:14:10">2025-01-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-12T14:21:02.547Z" title="更新于 2025-01-12 22:21:02">2025-01-12</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="基于Docker的群辉NAS mc服务器搭建记录"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="基于Docker的群辉NAS-mc服务器搭建记录"><a href="#基于Docker的群辉NAS-mc服务器搭建记录" class="headerlink" title="基于Docker的群辉NAS mc服务器搭建记录"></a>基于Docker的群辉NAS mc服务器搭建记录</h1><p>Time</p>
+<p>2025.1.7：开始搭建</p>
+<p>2025.1.12：搭建完成</p>
+<h2 id="软硬件环境"><a href="#软硬件环境" class="headerlink" title="软硬件环境"></a>软硬件环境</h2><ul>
+<li>NAS：群晖DS224+</li>
+<li>系统：DSM 7.2.2-72806 Update 2</li>
+<li>MCSM docker镜像版本：githubyumao&#x2F;mcsmanager-web:latest、githubyumao&#x2F;mcsmanager-daemon:latest</li>
+<li>java镜像版本：mcsm-openjdk:17</li>
+<li>mc服务器内核：paper 1.20.1 release</li>
+</ul>
+<h2 id="前期工作"><a href="#前期工作" class="headerlink" title="前期工作"></a>前期工作</h2><h3 id="SSH软件选择"><a href="#SSH软件选择" class="headerlink" title="SSH软件选择"></a>SSH软件选择</h3><p>要连接NAS时发现自己还是用的古早的putty，，，决定换一下。在xshell，tabby，mobaxterm中选择了mobaxterm，查了一些资料列在下面了。</p>
+<p>相关资料：</p>
+<ul>
+<li>除了Xshell和FinalShell 还有什么好用的SSH连接工具？ <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1xJ4m1s7zX/?share_source=copy_web&amp;vd_source=94787cc75783769da63e2f41d6831447">https://www.bilibili.com/video/BV1xJ4m1s7zX/?share_source=copy_web&amp;vd_source=94787cc75783769da63e2f41d6831447</a></li>
+<li>MobaXterm快速入门、高级使用技巧 <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34435096/article/details/130729092">https://blog.csdn.net/qq_34435096/article/details/130729092</a></li>
+<li>【终端】全能终端神器MobaXterm  <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ze41157SP/?share_source=copy_web&amp;vd_source=94787cc75783769da63e2f41d6831447">https://www.bilibili.com/video/BV1ze41157SP/?share_source=copy_web&amp;vd_source=94787cc75783769da63e2f41d6831447</a></li>
+</ul>
+<h3 id="Docker环境配置"><a href="#Docker环境配置" class="headerlink" title="Docker环境配置"></a>Docker环境配置</h3><p>操作里要拉取docker镜像，但因为一些众所周知的原因截至2024年9月国内站点全暴毙了，目前的想法是在内网下用另一个设备实现全局代理来科学上网，之后再在docker里拉取clash镜像实现一劳永逸。</p>
+<p>但是经过两个多小时的试验发现全局代理莫名其妙不生效，具体表现为在root用户下可以ping通baidu.com但是curl google.com无响应，同时套件中心查找功能也失效，很是头疼。</p>
+<p>目前没有解决办法，于是思路改为直接离线部署docker的clash镜像解决——然后现在问题就变成了怎么离线部署clash容器，这里目前使用docker命令下直接读取镜像压缩包的模式，所以先安装win10的docker desktop，之后做迁移。</p>
+<p>但是我犯了个很大的错误：win10的docker desktop可基于hyper-v或wsl安装，我这里选择的是wsl后端，但问题是这是通过虚拟化实现的，是在win中搭建linux子系统，导致我找不到image的安装位置，，，或者直接是在虚拟机的虚拟盘里没法直接定位到，这条路子又不太好走通了。</p>
+<p>于是问题又回到了寻找还现存的docker镜像网站——好在是最后找到了www。另外在搜寻资料的过程中发现clash由于不再维护已经不是主流魔法软件了，所以换成了v2ray为内核的v2raya（自己还是更喜欢GUI一点），只能重新扒翻文档，最后还是学会了。</p>
+<p><strong>于是目前的魔法路径是启动容器后通过2017端口登录v2raya，然后选择节点连接即可。关闭时逆序操作，关闭节点连接后关闭容器。</strong>不过有一个很显而易见的坏处就是自己家是公网ip，导致开着容器的时候梯子是裸着的，，，现在只能随用随关了，打算搞完这些东西用防火墙解决一下。</p>
+<p>另外记录一下发生的一些bug和想法：</p>
+<ul>
+<li><p>上面提到过的全局代理不生效问题。</p>
+</li>
+<li><p>以wsl2为核心的docker image文件导出如何操作。</p>
+</li>
+<li><p>服务器与镜像服务器关系：为什么docker在服务器无法连接的情况下不会切换至镜像服务器连接（至少我这边现象是这样），另外为什么只有魔法可以连接到注册表而修改仓库地址不行（但是却可以pull？）。</p>
+</li>
+<li><p>开始构建v2vara镜像时使用的是bridge的docker网络架构，本来想着做防护，但是一旦通过防火墙仅将2017端口暴露给内网就会连接失败（这不是docker自己做好的端口映射吗，搞不懂），所以现在又改为host网络了，会不会导致不安全情形？发生这一问题的原因又是什么？</p>
+</li>
+<li><p>现在开容器的时候端口是直接裸露的，有没有一种方法使控制端口仅对内网开放的同时其他端口正常使用，目前想不出来bridge和host的做法。</p>
+</li>
+<li><p>开容器必须使用root权限否则在连接节点时出错，查了一下好像是centos iptables的问题，为什么？</p>
+</li>
+<li><p>群辉nas可以curl google.com生效但是ping不通，二者的工作原理有什么不同？</p>
+</li>
+</ul>
+<p>相关资料：</p>
+<ul>
+<li><p>群晖7.2系统通过Docker安装Clash实现全局代理科学上网 <a target="_blank" rel="noopener" href="https://www.onemuggle.com/archives/739.html">https://www.onemuggle.com/archives/739.html</a></p>
+</li>
+<li><p><strong>Windows使用wsl2安装docker教程</strong> <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43982359/article/details/135699935">https://blog.csdn.net/weixin_43982359/article/details/135699935</a></p>
+</li>
+<li><p>群晖DSM7.2 修改Docker配置文件，并重启Docker服务生效 <a target="_blank" rel="noopener" href="https://blog.csdn.net/caca_66/article/details/139904656%EF%BC%88%E7%9B%AE%E5%89%8D%E5%8F%AA%E6%9C%89%E8%BF%99%E4%B8%AA%E5%91%BD%E4%BB%A4%E8%83%BD%E7%94%A8%EF%BC%89">https://blog.csdn.net/caca_66/article/details/139904656（目前只有这个命令能用）</a></p>
+</li>
+<li><p>解决Docker拉取镜像时遇到的dial tcp …:443: i&#x2F;o timeout错误 <a target="_blank" rel="noopener" href="https://blog.csdn.net/zhangkunls/article/details/139612810">https://blog.csdn.net/zhangkunls/article/details/139612810</a></p>
+</li>
+<li><p><strong>浅析docker容器网桥的实现原理以及docker的四种网络模式和bridge模式的具体原理</strong> <a target="_blank" rel="noopener" href="https://www.cnblogs.com/goloving/p/15133673.html">https://www.cnblogs.com/goloving/p/15133673.html</a></p>
+</li>
+<li><p>群辉 NAS docker 中配置 v2ray 客户端 <a target="_blank" rel="noopener" href="https://wqdy.top/1165.html">https://wqdy.top/1165.html</a></p>
+</li>
+<li><p>V2Ray 配置指南 <a target="_blank" rel="noopener" href="https://selierlin.github.io/v2ray/">https://selierlin.github.io/v2ray/</a></p>
+</li>
+<li><p><strong>科学上网：利用 Docker 搭建 v2raya 客户端</strong> <a target="_blank" rel="noopener" href="https://lazypool-blog.netlify.app/2024/05/13/docker/">https://lazypool-blog.netlify.app/2024/05/13/docker/</a></p>
+</li>
+<li><p>v2raya使用请教 <a target="_blank" rel="noopener" href="https://forums.unraid.net/topic/151161-v2raya%E4%BD%BF%E7%94%A8%E8%AF%B7%E6%95%99/">https://forums.unraid.net/topic/151161-v2raya%E4%BD%BF%E7%94%A8%E8%AF%B7%E6%95%99/</a></p>
+</li>
+</ul>
+<h2 id="搭建MCSM面板"><a href="#搭建MCSM面板" class="headerlink" title="搭建MCSM面板"></a>搭建MCSM面板</h2><p>因为决定采用docker，所以前期工作完成后部署起来意料之中的顺利——基本上跟着官方文档走一遍就行。需要注意一下群辉系统好像没给管理员太多权限，所以在dsm里有时镜像会构建失败，尽量还是通过ssh在root权限下用命令行操作。</p>
+<p>相关资料：</p>
+<ul>
+<li><strong>【官方文档】使用 Docker 安装面板</strong> <a target="_blank" rel="noopener" href="https://docs.mcsmanager.com/zh_cn/docker-install.html">https://docs.mcsmanager.com/zh_cn/docker-install.html</a></li>
+<li>群晖DSM 7.2 Container Manager中部署MCSManager <a target="_blank" rel="noopener" href="https://www.bilibili.com/opus/823010927596011526?spm_id_from=333.999.0.0">https://www.bilibili.com/opus/823010927596011526?spm_id_from=333.999.0.0</a></li>
+</ul>
+<h2 id="部署服务端"><a href="#部署服务端" class="headerlink" title="部署服务端"></a>部署服务端</h2><p>根据官方流程，首先需要启动用于维护服务器的daemon容器，之后在web面板内进行配置就行。MCSM面板集成了开服绝大部分需要的操作，基本上点一点服务器就搭好了（笑）。总体来看，基本流程为：</p>
+<ol>
+<li><p>新增节点：将面板web端连接到守护进程端daemon上，其中可能需要配置daemon节点密钥，根据doc走一遍就行。</p>
+</li>
+<li><p>为节点添加应用实例：在<code>应用实例</code>板块选择<code>新建应用</code>，选择自己需要搭建的应用类型即可。这里我选择的是搭建java服务器<code>Minecraft快速部署</code>功能，选择<code>所有语言</code>后挑选自己喜欢的服务器核心即可。</p>
+</li>
+<li><p>服务器设置：应用实例构建完成后会进入终端板块，在<code>功能组</code>中选择<code>应用实例设置</code>。其中<code>基础设置</code>与<code>高级设置</code>基本不需要操作，因为本篇文章主要是基于docker环境构建的服务器，所以需要配置一下服务器的容器化，相关参数如下：</p>
+<p><img src="/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/image-20250112001311658.png" alt="image-20250112001311658"></p>
+<p>其中需要额外注意<code>Docker镜像</code>与<code>网络模式</code>两项。前者会指定mc运行环境，可以通过拉取相关java环境镜像解决。后者需要与自己的docker网络模式相适应（我选择的是与前面web面板及daemon容器在同一个桥接网络下，不能保证不在这个网络下构建会不会出错，这边的远离我没太搞清楚）</p>
+</li>
+<li><p>服务器初始化：运行终端即可，paper的服务器核心会自动处理，最终在java容器内搭建好服务器，之后就可以通过<code>服务器ip＋端口号</code>连接服务器。</p>
+</li>
+</ol>
+<p>p.s. 在这部分有一个问题困扰了我好久：我是如何实现服务器存储数据的持久化的——换言之，物理机与服务器容器内的文件的映射关系是怎样的。最终也是找到了答案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">物理机地址：/volumn1/docker/mcsmanger/daemon...</span><br><span class="line">&lt;--挂载--&gt;daemon容器内地址（daemon image）：/opt/mcsmanger/daemin/...</span><br><span class="line">&lt;--映射--&gt;服务器运行时地址（java image）：/workspace</span><br></pre></td></tr></table></figure>
+
+<p>通过一级挂载与一级映射解决，好棒的思路。</p>
+<p>相关资料：</p>
+<ul>
+<li><strong>【官方文档】连接其他机器</strong> <a target="_blank" rel="noopener" href="https://docs.mcsmanager.com/zh_cn/advanced/distributed.html">https://docs.mcsmanager.com/zh_cn/advanced/distributed.html</a></li>
+<li><strong>群晖在MCSManager中创建MC服务器</strong> <a target="_blank" rel="noopener" href="https://www.bilibili.com/opus/844852382488592422?spm_id_from=333.999.0.0">https://www.bilibili.com/opus/844852382488592422?spm_id_from=333.999.0.0</a></li>
+<li>闲置NAS不要扔，裹上教程开个MC服务器还不是真香，MCSM面板使用教程 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV15YzVYKEyj/?spm_id_from=333.337.search-card.all.click&amp;vd_source=d6914ee62954ad222463c717aedc5f40">https://www.bilibili.com/video/BV15YzVYKEyj/?spm_id_from=333.337.search-card.all.click&amp;vd_source=d6914ee62954ad222463c717aedc5f40</a></li>
+<li>MCSM安装docker以及使用教程 <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1gV4y1h7pj/?spm_id_from=333.337.search-card.all.click&amp;vd_source=d6914ee62954ad222463c717aedc5f40">https://www.bilibili.com/video/BV1gV4y1h7pj/?spm_id_from=333.337.search-card.all.click&amp;vd_source=d6914ee62954ad222463c717aedc5f40</a></li>
+<li>使用 Docker 快速搭建《我的世界》（Minecraft）服务器 <a target="_blank" rel="noopener" href="https://www.bilibili.com/opus/931671697539465241">https://www.bilibili.com/opus/931671697539465241</a></li>
+<li>威联通NAS用Docker搭建我的世界（MC）服务器 <a target="_blank" rel="noopener" href="https://blog.zeruns.com/archives/674.html">https://blog.zeruns.com/archives/674.html</a></li>
+<li>docker 容器中文件目录一般创建在哪里 <a target="_blank" rel="noopener" href="https://blog.51cto.com/u_16213416/12955067">https://blog.51cto.com/u_16213416/12955067</a></li>
+<li>解决Docker容器内文件修改不生效的问题：深入理解Volume与Bind Mount的使用 <a target="_blank" rel="noopener" href="https://www.oryoy.com/news/jie-jue-docker-rong-qi-nei-wen-jian-xiu-gai-bu-sheng-xiao-de-wen-ti-shen-ru-li-jie-volume-yu-bind-mo.html">https://www.oryoy.com/news/jie-jue-docker-rong-qi-nei-wen-jian-xiu-gai-bu-sheng-xiao-de-wen-ti-shen-ru-li-jie-volume-yu-bind-mo.html</a></li>
+</ul>
+<h2 id="一些碎碎念"><a href="#一些碎碎念" class="headerlink" title="一些碎碎念"></a>一些碎碎念</h2><p>竟然还是童年想联机玩mc的愿景驱使我搞完这些东西，，，现在自己也是有了能和好友快乐玩耍的一番天地了。以及终于补完了和老吴的mc约定，顺带还想起来和天哥开荒服务器的的时光，当时的我是否又能想象到现在的自己。</p>
+<p>以及现在边学科三边搞这东西真是心力憔悴，前几天熬夜找问题还得早起练车，，，寒假回来还没好好歇着喂（！</p>
+<p>以及公网ip给了我太多的可能性了，下一步可能考虑迁移一下博客（顺便再美化一下），以及想起来毕设也还得搞（发愁，雷达自己没接触过要重新学啊…</p>
+<p>怎么还有人看到这，如果有兴趣来陪我聊天吧，QQ一直都在看到了就会回（摊手</p>
+<h2 id="相关记录"><a href="#相关记录" class="headerlink" title="相关记录"></a>相关记录</h2><p>开服流程：打开web容器-&gt;打开deamon容器-&gt;在web面板内打开服务器容器</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://Sarpless.github.io">Sarp</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://sarpless.github.io/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/">https://sarpless.github.io/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://Sarpless.github.io" target="_blank">Sarp's Blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://sarpless.github.io/2025/01/12/基于Docker的群辉NAS mc服务器搭建记录/MCSM.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2024/02/06/nas/"><img class="next-cover" src="https://sarpless.github.io/2024/02/06/nas/NAS.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">家用NAS及相关服务搭建记录</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Sarp</div><div class="author-info__description">A Sharing World</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">2</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">0</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Sarpless"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Sarpless" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="https://space.bilibili.com/80430197" target="_blank" title="bilibili"><i class="fab fa-bilibili"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is Sarp's Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS-mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95"><span class="toc-number">1.</span> <span class="toc-text">基于Docker的群辉NAS mc服务器搭建记录</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AF%E7%A1%AC%E4%BB%B6%E7%8E%AF%E5%A2%83"><span class="toc-number">1.1.</span> <span class="toc-text">软硬件环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%B7%A5%E4%BD%9C"><span class="toc-number">1.2.</span> <span class="toc-text">前期工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SSH%E8%BD%AF%E4%BB%B6%E9%80%89%E6%8B%A9"><span class="toc-number">1.2.1.</span> <span class="toc-text">SSH软件选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Docker%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.2.2.</span> <span class="toc-text">Docker环境配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%90%AD%E5%BB%BAMCSM%E9%9D%A2%E6%9D%BF"><span class="toc-number">1.3.</span> <span class="toc-text">搭建MCSM面板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">1.4.</span> <span class="toc-text">部署服务端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%A2%8E%E7%A2%8E%E5%BF%B5"><span class="toc-number">1.5.</span> <span class="toc-text">一些碎碎念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E8%AE%B0%E5%BD%95"><span class="toc-number">1.6.</span> <span class="toc-text">相关记录</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/" title="基于Docker的群辉NAS mc服务器搭建记录"><img src="https://sarpless.github.io/2025/01/12/基于Docker的群辉NAS mc服务器搭建记录/MCSM.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于Docker的群辉NAS mc服务器搭建记录"/></a><div class="content"><a class="title" href="/2025/01/12/%E5%9F%BA%E4%BA%8EDocker%E7%9A%84%E7%BE%A4%E8%BE%89NAS%20mc%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E8%AE%B0%E5%BD%95/" title="基于Docker的群辉NAS mc服务器搭建记录">基于Docker的群辉NAS mc服务器搭建记录</a><time datetime="2025-01-12T14:14:10.000Z" title="发表于 2025-01-12 22:14:10">2025-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/02/06/nas/" title="家用NAS及相关服务搭建记录"><img src="https://sarpless.github.io/2024/02/06/nas/NAS.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="家用NAS及相关服务搭建记录"/></a><div class="content"><a class="title" href="/2024/02/06/nas/" title="家用NAS及相关服务搭建记录">家用NAS及相关服务搭建记录</a><time datetime="2024-02-06T11:29:36.000Z" title="发表于 2024-02-06 19:29:36">2024-02-06</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Sarp</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
